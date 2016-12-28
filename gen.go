@@ -33,14 +33,14 @@ func GenCache(v interface{}, pkgname string, nocacheMethods ...string) ([]byte, 
 	head := bytes.NewBuffer(nil)
 	fmt.Println(typ.Elem().String())
 	temp := strings.Split(typ.Elem().String(), ".")
-	pkgSet := map[string]bool{"github.com/cocotyty/cachegen/itfc":true, typ.Elem().PkgPath():true}
+	pkgSet := map[string]bool{"github.com/cocotyty/summer":true, "github.com/cocotyty/cachegen/itfc":true, typ.Elem().PkgPath():true}
 	pkg := pkgname
 	typePkg := temp[0]
 	typname := temp[1]
 	head.WriteString(`package `)
 	head.WriteString(pkg)
 	head.WriteRune('\n')
-	src.WriteString("\n func init(){\n summer.put(&" + typname + "{}) \n}\ntype " + typname + " struct{\nCache itfc.Cache `sm:\"*\"`\nParent *" + typePkg + "." + typname + " `sm:\"*\"`\n}\n")
+	src.WriteString("\n func init(){\n summer.Put(&" + typname + "{}) \n}\ntype " + typname + " struct{\nCache itfc.Cache `sm:\"*\"`\nParent *" + typePkg + "." + typname + " `sm:\"*\"`\n}\n")
 	var errForType error = nil
 	fmt.Println(reflect.TypeOf(&errForType).Elem())
 	methodNum := 0
