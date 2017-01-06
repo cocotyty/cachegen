@@ -113,7 +113,7 @@ import "{{fullPkg}}"
 import "io/ioutil"
 func main(){
 {% for name,li in list %}
-	run(&{{proxypkg}}.{{li.Name}}{},"{{pkgname}}","{{fullpath}}/{{li.Name}}.go",{{li.NocacheMethods|stringformat:"%s"|safe}})
+	run(&{{proxypkg}}.{{li.Name}}{},"{{pkgname}}","{{fullpath}}/proxy_cached_{{li.Name}}.go",{{li.NocacheMethods|stringformat:"%s"|safe}})
 {% endfor %}
 }
 func run(v interface{},pkgname string,fullpath string,nocacheMethod []string){
@@ -127,26 +127,24 @@ func run(v interface{},pkgname string,fullpath string,nocacheMethod []string){
 	if err != nil {
 		panic(err)
 	}
-	cachedGenDir := workdir + "/" + pkgName + "_cached"
-	err = os.Mkdir(cachedGenDir, 0777)
-	if err != nil {
-		f, err := os.Open(cachedGenDir)
-		if err != nil {
-			panic(err)
-		}
-		files, err := f.Readdir(-1)
-		if err != nil {
-			panic(err)
-		}
-		f.Close()
-		for _, v := range files {
-			if v.IsDir() {
-				os.RemoveAll(cachedGenDir + "/" + v.Name())
-			} else {
-				os.Remove(cachedGenDir + "/" + v.Name())
-			}
-		}
-	}
+	cachedGenDir := workdir
+	//err = os.Mkdir(cachedGenDir, 0777)
+	//if err != nil {
+	//	f, err := os.Open(cachedGenDir)
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//	files, err := f.Readdir(-1)
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//	f.Close()
+	//	for _, v := range files {
+	//		if !v.IsDir()  && strings.HasPrefix(v.Name(),"proxy_cached_") &&strings.HasSuffix(v.Name(),".go"){
+	//			os.Remove(cachedGenDir + "/" + v.Name())
+	//		}
+	//	}
+	//}
 
 	f, err := os.Create(tempDir + "/gen.go")
 	if err != nil {
@@ -154,7 +152,7 @@ func run(v interface{},pkgname string,fullpath string,nocacheMethod []string){
 	}
 
 	tp.ExecuteWriter(pongo2.Context{
-		"pkgname":   pkgName + "_cached",
+		"pkgname":   pkgName,
 		"list":      list,
 		"fullpath":  cachedGenDir,
 		"fullPkg":   pkgPath,
